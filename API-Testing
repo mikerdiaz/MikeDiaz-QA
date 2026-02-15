@@ -1,1 +1,278 @@
+📦 Project: order-api-test-suite
 
+1️⃣ Folder Structure
+order-api-test-suite/
+│
+├── README.md
+├── requirements.txt
+├── pytest.ini
+│
+├── config/
+│   └── config.py
+│
+├── schemas/
+│   └── order_schema.json
+│
+├── tests/
+│   ├── conftest.py
+│   ├── test_auth.py
+│   ├── test_orders.py
+│   ├── test_security.py
+│   └── test_contract.py
+│
+└── .github/
+    └── workflows/
+        └── ci.yml
+
+Run Tests
+pytest -v
+
+CI Pipeline
+
+This project includes GitHub Actions configuration for automated test execution on push.
+
+Architecture Approach
+
+Centralized configuration
+
+Token fixture for session reuse
+
+Schema validation layer
+
+Separation of concerns
+
+CI-ready design
+
+Clean assertions with meaningful failure messages
+
+Designed to reflect real-world backend API validation practices.
+
+
+---
+
+# 3️⃣ requirements.txt
+
+
+
+pytest
+requests
+jsonschema
+python-dotenv
+
+
+---
+
+# 4️⃣ pytest.ini
+
+
+
+[pytest]
+addopts = -v --tb=short
+testpaths = tests
+
+
+---
+
+# 5️⃣ config/config.py
+
+```python
+import os
+
+BASE_URL = os.getenv("BASE_URL", "https://api.example.com/v1")
+USERNAME = os.getenv("API_USERNAME", "testuser")
+PASSWORD = os.getenv("API_PASSWORD", "password123")
+
+TIMEOUT = 10
+
+6️⃣ schemas/order_schema.json
+{
+  "type": "object",
+  "required": ["id", "customerId", "status", "totalAmount"],
+  "properties": {
+    "id": { "type": "integer" },
+    "customerId": { "type": "integer" },
+    "status": { "type": "string" },
+    "totalAmount": { "type": "number" }
+  },
+  "additionalProperties": false
+}
+
+7️⃣ tests/conftest.py
+import pytest
+import requests
+from config.config import BASE_URL, USERNAME, PASSWORD, TIMEOUT
+
+
+@pytest.fixture(scope="session")
+def auth_token():
+    response = requests.post(
+        f"{BASE_URL}/auth/login",
+        json={
+            "username": USERNAME,
+            "password": PASSWORD
+        },
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 200, "Authentication failed"
+    token = response.json().get("token")
+
+    assert token is not None, "Token not returned in authentication response"
+    return token
+
+
+@pytest.fixture
+def auth_headers(auth_token):
+    return {
+        "Authorization": f"Bearer {auth_token}",
+        "Content-Type": "application/json"
+    }
+
+8️⃣ tests/test_auth.py
+import requests
+from config.config import BASE_URL, TIMEOUT
+
+
+def test_valid_login():
+    response = requests.post(
+        f"{BASE_URL}/auth/login",
+        json={
+            "username": "testuser",
+            "password": "password123"
+        },
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 200
+    assert "token" in response.json()
+
+
+def test_invalid_login():
+    response = requests.post(
+        f"{BASE_URL}/auth/login",
+        json={
+            "username": "invalid",
+            "password": "wrong"
+        },
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 401
+
+9️⃣ tests/test_orders.py
+import requests
+from config.config import BASE_URL, TIMEOUT
+
+
+def test_create_order(auth_headers):
+    payload = {
+        "customerId": 1001,
+        "items": [
+            {"productId": 501, "quantity": 2}
+        ],
+        "currency": "USD"
+    }
+
+    response = requests.post(
+        f"{BASE_URL}/orders",
+        json=payload,
+        headers=auth_headers,
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 201
+    data = response.json()
+
+    assert data["customerId"] == 1001
+    assert data["totalAmount"] > 0
+    assert "id" in data
+
+
+def test_create_order_missing_customer(auth_headers):
+    payload = {
+        "items": [{"productId": 501, "quantity": 2}]
+    }
+
+    response = requests.post(
+        f"{BASE_URL}/orders",
+        json=payload,
+        headers=auth_headers,
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 400
+
+🔟 tests/test_security.py
+import requests
+from config.config import BASE_URL, TIMEOUT
+
+
+def test_access_without_token():
+    response = requests.get(
+        f"{BASE_URL}/orders/1",
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 401
+
+
+def test_sql_injection_attempt():
+    response = requests.post(
+        f"{BASE_URL}/auth/login",
+        json={
+            "username": "admin' OR '1'='1",
+            "password": "test"
+        },
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code in [400, 401]
+
+1️⃣1️⃣ tests/test_contract.py
+import requests
+import json
+import jsonschema
+from config.config import BASE_URL, TIMEOUT
+
+
+def test_order_schema_validation(auth_headers):
+    response = requests.get(
+        f"{BASE_URL}/orders/1",
+        headers=auth_headers,
+        timeout=TIMEOUT
+    )
+
+    assert response.status_code == 200
+
+    with open("schemas/order_schema.json") as f:
+        schema = json.load(f)
+
+    jsonschema.validate(instance=response.json(), schema=schema)
+
+1️⃣2️⃣ GitHub Actions CI (.github/workflows/ci.yml)
+name: API Test Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
