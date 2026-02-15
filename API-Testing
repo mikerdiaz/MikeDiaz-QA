@@ -24,6 +24,43 @@ order-api-test-suite/
     └── workflows/
         └── ci.yml
 
+2️⃣ README.md
+# Order API Test Suite
+
+This repository demonstrates advanced API testing practices for a RESTful Order Management Service.
+
+## Objectives
+
+- Functional validation
+- Authentication & authorization validation
+- Contract testing (JSON Schema)
+- Negative and boundary testing
+- Security-focused validation
+- CI-ready automation
+
+## Tech Stack
+
+- Python 3.11+
+- Pytest
+- Requests
+- JSONSchema
+- GitHub Actions (CI)
+
+## Test Coverage Areas
+
+✔ Authentication validation  
+✔ CRUD order operations  
+✔ Boundary & negative scenarios  
+✔ Schema contract validation  
+✔ Security test cases  
+✔ Token handling  
+✔ Error handling validation  
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+
 Run Tests
 pytest -v
 
