@@ -6,7 +6,7 @@ This repo contains practical projects, test cases, bug reports, and SQL samples
 ## 🔧 Tools & Skills
 - Manual Testing (Functional, Regression)
 - JIRA & Bug Reporting
-- SQL (PostgreSQL)
+- SQL
 - Agile / Scrum Practices
 - Git & GitHub
 - Postman (API testing)
