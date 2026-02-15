@@ -1,4 +1,4 @@
-# 👋 Mike Diaz – QA Engineer
+# 👋 Mike Diaz – Software Quality Engineer
 
 Welcome to my QA testing portfolio!  
 This repo contains practical projects, test cases, bug reports, and SQL samples
