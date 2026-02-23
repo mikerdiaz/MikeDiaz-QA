@@ -27,8 +27,6 @@ database-test-suite/
 2️⃣ README.md (Recruiter-Optimized)
 # Database Test Suite – Advanced SQL Validation
 
-This repository demonstrates a production-style SQL test automation framework designed for backend database validation and Software Quality Engineering.
-
 ## Objectives
 
 - Validate data integrity and relational consistency
