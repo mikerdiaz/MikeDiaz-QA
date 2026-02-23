@@ -1,6 +1,6 @@
 📦 Project: order-api-test-suite
 
-Advanced API Test Automation Framework built with Pytest. Demonstrates authentication, contract validation, security testing, CI integration, and production-ready test architecture. Designed to reflect real-world backend microservice validation practices.
+Advanced API Test Automation Framework built with Pytest. Use authentication, contract validation, security testing, CI integration, and production-ready test architecture.
 
 1️⃣ Folder Structure
 order-api-test-suite/
@@ -28,8 +28,6 @@ order-api-test-suite/
 
 2️⃣ README.md
 # Order API Test Suite
-
-This repository demonstrates advanced API testing practices for a RESTful Order Management Service.
 
 ## Objectives
 
@@ -83,8 +81,6 @@ Separation of concerns
 CI-ready design
 
 Clean assertions with meaningful failure messages
-
-Designed to reflect real-world backend API validation practices.
 
 
 ---
