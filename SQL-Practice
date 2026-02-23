@@ -67,8 +67,6 @@ database-test-suite/
 
 ---
 
-Designed to reflect **Senior Software Quality Engineer skills in database validation and automation**.
-
 3️⃣ requirements.txt
 pytest
 psycopg2-binary
